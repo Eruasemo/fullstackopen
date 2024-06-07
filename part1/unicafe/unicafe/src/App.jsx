@@ -7,7 +7,11 @@ const DisplayStatistic = ({ text, quantity }) => <p>{text} - {Math.round(quantit
 const DisplayPercentage = ({ text, quantity }) => <p>{text} - {quantity.toFixed(2)} %</p>
 
 const Statistics = ({clicks}) => {
-  
+  if(clicks.total===0){
+    return (
+      <p>Currently, there's no feedback given. Please click a button!</p>
+    )
+  }
   return (
     <>
     <DisplayTitle text='Statistics' />
