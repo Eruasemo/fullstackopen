@@ -9,7 +9,7 @@ const DisplayPercentage = ({ text, quantity }) => <tr><th>{text}</th><td>{quanti
 const Statistics = ({ clicks }) => {
   if (clicks.total === 0) {
     return (
-      <p>Currently, there's no feedback given. Please click a button!</p>
+      <p>Currently, there is no feedback given. Please click a button!</p>
     )
   }
   return (
