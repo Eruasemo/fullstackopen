@@ -2,6 +2,23 @@ import './App.css'
 import { useState } from 'react'
 
 const Button = ({ clickHandler, text }) => <button onClick={clickHandler}>{text}</button>
+const DisplayTitle = ({ text }) => <h3>{text}</h3>
+const DisplayAnecdote = ({ anecdote, votes }) => <><p>{anecdote}</p><p>Has {votes} votes</p></>
+const DisplayMostVoted = ({ anecdotes, mostVotes }) => {
+  if (mostVotes > 0) {
+    const filterAnecdotes=anecdotes.filter(anecdote=>anecdote.votes===mostVotes)
+    const t = filterAnecdotes.map(anecdote => <DisplayAnecdote key={anecdote.text} anecdote={anecdote.text} votes={anecdote.votes} />)
+    return (
+      <div>
+        <DisplayTitle text='Anecdote with most votes' />
+        {t}
+      </div>
+    )
+  }
+  return (
+    <p>Please vote ...</p>
+  )
+}
 
 const App = () => {
   const data = [
@@ -19,23 +36,31 @@ const App = () => {
 
   const [selected, setSelected] = useState(0)
 
+  const [mostVotes, setMostVotes] = useState(0)
+
   const AnecdoteRandomizer = () => {
     setSelected(Math.floor(Math.random() * data.length))
   }
   const VoteHandler = () => {
-    const copy = { ...anecdotes }
+    const copy = [...anecdotes]
     copy[selected].votes++
+    if (copy[selected].votes > mostVotes) {
+      setMostVotes(copy[selected].votes)
+    }
     setAnecdotes(copy)
+
   }
 
   return (
     <div>
-      <p>{anecdotes[selected].text}</p>
-      <p>Has {anecdotes[selected].votes} votes</p>
+      <DisplayTitle text='Anecdote of the day' />
+      <DisplayAnecdote anecdote={anecdotes[selected].text} votes={anecdotes[selected].votes} />
+
       <div>
         <Button clickHandler={AnecdoteRandomizer} text='Next anecdote' />
         <Button clickHandler={VoteHandler} text='Vote' />
       </div>
+      <DisplayMostVoted anecdotes={anecdotes} mostVotes={mostVotes} />
     </div>
   )
 }
