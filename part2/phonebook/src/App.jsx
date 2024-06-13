@@ -8,15 +8,19 @@ const App = () => {
     { name: 'Arto Hellas' }
   ])
   const [newName, setNewName] = useState('')
-  
+
 
   const addPerson = (event) => {
-    event.preventDefault()    
+    event.preventDefault()
     const personObject = {
-      name: newName,      
+      name: newName,
     }
-    setPersons(persons.concat(personObject));
-    setNewName('')
+    if (persons.some(person => JSON.stringify(person) === JSON.stringify(personObject))) {
+      alert(`${personObject.name} is already on the phonebook.`)
+    } else {
+      setPersons(persons.concat(personObject));
+      setNewName('')
+    }
   }
 
   const handleNameChange = (event) => {
@@ -28,7 +32,7 @@ const App = () => {
       <h2>Phonebook</h2>
       <form onSubmit={addPerson}>
         <div>
-          name: <input name='name' value={newName} onChange={handleNameChange} />
+          name: <input name='name' value={newName} onChange={handleNameChange} required />
         </div>
         <div>
           <button type="submit">add</button>
