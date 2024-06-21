@@ -3,20 +3,20 @@ import './App.css'
 import DisplayNames from './components/DisplayNames'
 import Input from './components/Input'
 import AddNewForm from './components/AddNewForm'
-import axios from 'axios'
+import personsService from './services/persons'
 
 
 const App = () => {
   const [persons, setPersons] = useState([])
-  const [newName, setNewName] = useState({ name: '', number: '' })
+  const [newName, setNewName] = useState({name:'',number:''})
   const [filter, setFilter] = useState('')
 
-  useEffect(()=>{
-    axios.get('http://localhost:3001/persons')
-    .then(response=>{
-      setPersons(response.data)
-    })
-  },[])
+  useEffect(() => {
+    personsService.getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
+      })
+  }, [])
 
   const personsToShow = filter == '' ? persons : persons.filter(person => person.name.toLocaleLowerCase().includes(filter.toLowerCase()))
 
@@ -27,8 +27,11 @@ const App = () => {
     if (persons.some(person => JSON.stringify(person.number) === JSON.stringify(personObject.number))) {
       alert(`${personObject.number} is already on the phonebook.`)
     } else {
-      setPersons(persons.concat(personObject));
-      setNewName({ name: '', number: '' })
+      personsService.create(personObject).then(personsChanged => {
+        setPersons(persons.concat(personsChanged));
+        setNewName({name:'',number:''})
+      })
+
     }
   }
 
