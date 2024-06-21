@@ -8,7 +8,7 @@ import personsService from './services/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([])
-  const [newName, setNewName] = useState({name:'',number:''})
+  const [newName, setNewName] = useState({ name: '', number: '' })
   const [filter, setFilter] = useState('')
 
   useEffect(() => {
@@ -29,10 +29,18 @@ const App = () => {
     } else {
       personsService.create(personObject).then(personsChanged => {
         setPersons(persons.concat(personsChanged));
-        setNewName({name:'',number:''})
+        setNewName({ name: '', number: '' })
       })
 
     }
+  }
+
+  const removePerson = (personToDelete) => {
+    if (window.confirm(`Delete ${personToDelete.name}`)) {
+      personsService.remove(personToDelete.id)
+        .then(deletedPerson => setPersons(persons.filter(person => person.id !== deletedPerson.id)))
+    }
+
   }
 
   const handleNameChange = (event) => {
@@ -54,7 +62,7 @@ const App = () => {
       <h3>Add a new:</h3>
       <AddNewForm addPerson={addPerson} handleNameChange={handleNameChange} handleNumberChange={handleNumberChange} newName={newName} />
       <h3>Numbers</h3>
-      <DisplayNames persons={personsToShow} />
+      <DisplayNames persons={personsToShow} removePerson={removePerson} />
     </div>
   )
 }
