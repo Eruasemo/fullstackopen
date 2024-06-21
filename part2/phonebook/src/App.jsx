@@ -23,16 +23,21 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault()
     const personObject = newName
+    const personDup = persons.find(person => JSON.stringify(person.name) === JSON.stringify(personObject.name))
     //I decided that I should be able to register two numbers for the same person, but I can't register the same number with different names.
     if (persons.some(person => JSON.stringify(person.number) === JSON.stringify(personObject.number))) {
       alert(`${personObject.number} is already on the phonebook.`)
+    } else if (personDup) {
+      if (window.confirm(`${personObject.name} is already added to the phonebook, replace the old number with a new one? `)) {
+        personsService.update(personDup.id, personObject)
+          .then(numberChanged => setPersons(persons.map(person => person.id !== personDup.id ? person : numberChanged)))
+      }
     } else {
       personsService.create(personObject).then(personsChanged => {
         setPersons(persons.concat(personsChanged));
-        setNewName({ name: '', number: '' })
       })
-
     }
+    setNewName({ name: '', number: '' })
   }
 
   const removePerson = (personToDelete) => {
