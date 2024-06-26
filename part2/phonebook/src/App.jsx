@@ -37,52 +37,56 @@ const App = () => {
     } else if (personDup) {
       if (window.confirm(`${personObject.name} is already added to the phonebook, replace the old number with a new one? `)) {
         personsService.update(personDup.id, personObject)
-          .then(numberChanged => setPersons(persons.map(person => person.id !== personDup.id ? person : numberChanged)))
-      }
-    } else {
-      personsService.create(personObject).then(personsChanged => {
-        setPersons(persons.concat(personsChanged));
+          .then(numberChanged => {
+            setPersons(persons.map(person => person.id !== personDup.id ? person : numberChanged))
+            showNotification(`${personObject.name} changed number to ${personObject.number}`, 'success')
       })
-      showNotification(`Added ${personObject.name}`, 'success')
     }
-    setNewName({ name: '', number: '' })
+  } else {
+    personsService.create(personObject).then(personsChanged => {
+      setPersons(persons.concat(personsChanged));
+    })
+  showNotification(`Added ${personObject.name}`, 'success')
+}
+setNewName({ name: '', number: '' })
   }
 
-  const removePerson = (personToDelete) => {
-    if (window.confirm(`Delete ${personToDelete.name}`)) {
-      personsService.remove(personToDelete.id)
-        .then(deletedPerson => {setPersons(persons.filter(person => person.id !== deletedPerson.id))
-          showNotification(`${personToDelete.name} deleted`,'warning')
-        })
-        .catch(error=>showNotification(`${error.message}, so maybe ${personToDelete.name} was already deleted from server.`,'error'))
-      
-    }
+const removePerson = (personToDelete) => {
+  if (window.confirm(`Delete ${personToDelete.name}`)) {
+    personsService.remove(personToDelete.id)
+      .then(deletedPerson => {
+        setPersons(persons.filter(person => person.id !== deletedPerson.id))
+        showNotification(`${personToDelete.name} deleted`, 'warning')
+      })
+      .catch(error => showNotification(`${error.message}, so maybe ${personToDelete.name} was already deleted from server.`, 'error'))
 
   }
 
-  const handleNameChange = (event) => {
-    setNewName({ ...newName, name: event.target.value })
-  }
+}
 
-  const handleNumberChange = (event) => {
-    setNewName({ ...newName, number: event.target.value })
-  }
+const handleNameChange = (event) => {
+  setNewName({ ...newName, name: event.target.value })
+}
 
-  const handleFilterChange = (event) => {
-    setFilter(event.target.value)
-  }
+const handleNumberChange = (event) => {
+  setNewName({ ...newName, number: event.target.value })
+}
 
-  return (
-    <div>
-      <h2>Phonebook</h2>
-      <Notification notificationType={message.type} message={message.text} />
-      <Input name='Search' type='text' value={filter} handler={handleFilterChange} required={false} />
-      <h3>Add a new:</h3>
-      <AddNewForm addPerson={addPerson} handleNameChange={handleNameChange} handleNumberChange={handleNumberChange} newName={newName} />
-      <h3>Numbers</h3>
-      <DisplayNames persons={personsToShow} removePerson={removePerson} />
-    </div>
-  )
+const handleFilterChange = (event) => {
+  setFilter(event.target.value)
+}
+
+return (
+  <div>
+    <h2>Phonebook</h2>
+    <Notification notificationType={message.type} message={message.text} />
+    <Input name='Search' type='text' value={filter} handler={handleFilterChange} required={false} />
+    <h3>Add a new:</h3>
+    <AddNewForm addPerson={addPerson} handleNameChange={handleNameChange} handleNumberChange={handleNumberChange} newName={newName} />
+    <h3>Numbers</h3>
+    <DisplayNames persons={personsToShow} removePerson={removePerson} />
+  </div>
+)
 }
 
 export default App
